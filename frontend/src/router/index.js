@@ -89,6 +89,12 @@ const routes = [
     component: () => import('../views/HabitoView.vue'),
     meta: { requiresAuth: true }
   },
+      {
+    path: '/perfil',
+    name: 'perfil',
+    component: () => import('../views/perfilView.vue'),
+
+  },
 
 ];
 

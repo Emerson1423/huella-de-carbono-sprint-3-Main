@@ -56,6 +56,7 @@
               </li>
             </ul>
           </li>
+      
 
           <!-- Mostrar solo cuando NO está autenticado -->
           <template v-if="!isAuthenticated">
@@ -70,8 +71,9 @@
           <!-- Mostrar solo cuando SÍ está autenticado -->
           <template v-if="isAuthenticated">
             <li class="nav-item dropdown" @click.stop="toggleDropdown('usuario')">
-              <a href="#" class="nav-link user-name" @click.prevent>
-                <i class="fas fa-user"></i> {{ userName }}
+              <a href="#" class="nav-link-user-container" @click.prevent>
+                <span class="user-name">{{ userName }}</span>
+                <img :src="userAvatar" alt="Avatar" class="avatar-img" />
               </a>
               <ul class="dropdown-menu" :class="{ 'active': activeDropdown === 'usuario' }">
                 <li class="dropdown-item">
@@ -80,12 +82,17 @@
                   </router-link>
                 </li>
                 <li class="dropdown-item">
+                  <router-link to="/perfil" class="dropdown-link" @click="closeAll">
+                    <i class="fas fa-user"></i> Perfil
+                  </router-link>
+                </li>
+                <li class="dropdown-item">
                   <a href="#" class="dropdown-link logout-link" @click.prevent="showLogoutModal = true; closeAll()">
                     <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                   </a>
                 </li>
               </ul>
-            </li>
+            </li> 
           </template>
         </ul>
       </nav>
@@ -114,7 +121,8 @@ export default {
       activeDropdown: null,
       showLogoutModal: false,
       isAuthenticated: false,
-      userName: ''
+      userName: '',
+      userAvatar: require('@/assets/perfil/reemplazarP.png')
     }
   },
   
@@ -136,12 +144,20 @@ export default {
     checkAuthStatus() {
       const token = localStorage.getItem('token');
       const user = localStorage.getItem('user');
+     const avatarPrefs = localStorage.getItem('avatarPreferencias');
       
       if (token && user) {
         try {
           const userData = JSON.parse(user);
           this.isAuthenticated = true;
           this.userName = userData.usuario || userData.correo || 'Usuario';
+          if (avatarPrefs) {
+            const avatarData = JSON.parse(avatarPrefs);
+            if (avatarData.personajeBase) {
+              this.userAvatar = avatarData.personajeBase;
+            }
+          }
+          
         } catch (error) {
           console.error('Error parsing user data:', error);
           this.forceLogout();
@@ -149,6 +165,7 @@ export default {
       } else {
         this.isAuthenticated = false;
         this.userName = '';
+        this.userAvatar = require('@/assets/perfil/reemplazarP.png'); 
       }
     },
     
@@ -199,7 +216,7 @@ export default {
     forceLogout() {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      this.checkAuthStatus(); // Actualizar estado
+      this.checkAuthStatus(); 
       this.$router.push('/').catch(() => {});
     }
   }
@@ -234,6 +251,13 @@ body {
   margin: 0 auto;
   padding: 0 20px;
   height: 60px;
+  position: relative;
+}
+
+.logo {
+  position: absolute;
+  left: 20px;
+  z-index: 1001;
 }
 
 .logo-img {
@@ -249,6 +273,7 @@ body {
 .navigation {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .nav-list {
@@ -256,7 +281,9 @@ body {
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 4rem;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav-item {
@@ -269,38 +296,63 @@ body {
   font-size: 1.1rem;
   transition: color 0.3s ease;
   font-weight: bold;
-  padding: 0.5rem 0;
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
   gap: 8px;
+  border-radius: 6px;
 }
 
 .nav-link:hover {
   color: #42b983;
+  background-color: rgba(66, 185, 131, 0.1);
 }
 
 .router-link-active {
   color: #42b983;
-  border-bottom: 2px solid #42b983;
-  padding-bottom: 0.25rem;
+  background-color: rgba(66, 185, 131, 0.1);
 }
 
-/* Estilos especiales para el usuario autenticado */
-.user-name {
-  background-color: rgba(66, 185, 131, 0.1) !important;
-  color: #42b983 !important;
-  font-weight: bold;
-  padding: 8px 16px;
-  border: 1px solid #e0e0e0;
+.nav-link-user-container {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px !important;
+  text-decoration: none;
+  color: inherit;
+  gap: 4px;
   border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(117, 117, 117, 0.1);
-  background-color: white;
   transition: all 0.3s ease;
 }
 
-.user-name:hover {
-  background-color: rgba(66, 185, 131, 0.15) !important;
+.nav-link-user-container:hover {
+  background-color: rgba(66, 185, 131, 0.1);
+}
+
+.user-name {
+  color: #42b983;
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.nav-link-user-container:hover .avatar-img {
   border-color: #42b983;
+  transform: scale(1.05);
 }
 
 /* Menú hamburguesa (oculto en desktop) */
@@ -310,6 +362,9 @@ body {
   border: none;
   cursor: pointer;
   padding: 10px;
+  position: absolute;
+  right: 20px;
+  z-index: 1001;
 }
 
 .bar {
@@ -321,17 +376,9 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Estilos para el dropdown */
-.dropdown {
-  position: relative;
-}
-
+/*  dropdown */
 .nav-item.dropdown .nav-link {
   padding: 8px 16px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(117, 117, 117, 0.1);
-  background-color: white;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
@@ -467,9 +514,14 @@ body {
     padding: 1rem;
   }
 
+  .logo {
+    position: static;
+    margin-right: auto;
+  }
+
   .menu-toggle {
     display: block;
-    order: 2;
+    position: static;
   }
 
   .navigation {
@@ -477,7 +529,6 @@ body {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out;
-    order: 3;
   }
 
   .navigation.active {
@@ -513,18 +564,18 @@ body {
   .modal-actions {
     flex-direction: column;
   }
-}
 
-/* Efecto activo para el botón hamburguesa */
-.menu-toggle.active .bar:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
+  /* Efecto activo para el botón hamburguesa */
+  .menu-toggle.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
 
-.menu-toggle.active .bar:nth-child(2) {
-  opacity: 0;
-}
+  .menu-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+  }
 
-.menu-toggle.active .bar:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
+  .menu-toggle.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
 }
 </style>

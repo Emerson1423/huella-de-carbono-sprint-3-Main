@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const huellaRoutes = require('./routes/huella');
 const passwordResetRoutes = require('./routes/passwordReset');
 const googleOAuthRoutes = require('./routes/googleOauth');
+const updatePerfilRoutes = require('./routes/updatePerfil');
 
 app.use(cors());
 app.use(express.json());
@@ -23,6 +24,8 @@ app.use('/api', authRoutes);
 app.use('/api', huellaRoutes);
 app.use('/api', passwordResetRoutes);
 app.use('/api', googleOAuthRoutes);
+app.use('/api',updatePerfilRoutes);
+
 
 const PORT = 3000;
 app.listen(PORT, () => {
