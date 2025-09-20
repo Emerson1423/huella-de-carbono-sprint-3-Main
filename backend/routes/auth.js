@@ -47,4 +47,6 @@ router.get('/verificar-token', authenticateToken, (req, res) => {
   res.json({ valido: true });
 });
 
+
+
 module.exports = router;
