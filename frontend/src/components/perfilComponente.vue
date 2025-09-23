@@ -12,13 +12,16 @@
                         <div class="lista-habitos">
                             <!--segui emerson-->
                         </div>
-                    </div>
+                    </div> <EstadisticaComponente></EstadisticaComponente>
                       </div>
                
                 <div class="seccion-izquierda">
                     <formsPerfilComponente></formsPerfilComponente>
-                </div>   
+                </div> 
+      
+
               </div>
+
 
         </template>
 
@@ -26,12 +29,14 @@
 
 <script>
 
+import EstadisticaComponente from './estadisticaComponente.vue';
 import formsPerfilComponente from './formsPerfilComponente.vue';
 
 export default {
     components: {
     
-        formsPerfilComponente
+        formsPerfilComponente, 
+        EstadisticaComponente
     },
     data() {
         return {
@@ -144,10 +149,10 @@ export default {
 }
 
 .seccion-habitos h2 {
-  color: #2c3e50;
+  color: #333;
   margin-top: 0;
   margin-bottom: 20px;
-  font-size: 1.4rem;
+
   padding-bottom: 10px;
   border-bottom: 2px solid #e0e0e0;
 }
