@@ -3,7 +3,6 @@
         <div class="avatar-preview">
             <div class="avatar-container">
                 <img :src="user.personajeBase" class="avatar-base" alt="Personaje base">
-
             </div>
         </div>
 
@@ -14,14 +13,14 @@
                      :key="personaje.id" 
                      class="opcion-item"
                      :class="{selected: user.personajeBase === personaje.image}"
-                     @click="cambiarPersonaje(personaje)">
+                     @click="seleccionarPersonaje(personaje)">
                     <img :src="personaje.image" :alt="personaje.nombre" class="opcion-imagen-personaje">
                     <span class="opcion-nombre">{{ personaje.nombre }}</span>
                 </div>
             </div>
+            
+            <button class="card-btn" @click="updateAvatar">Seleccionar</button>
         </div>
-
- 
     </div>
 </template>
 
@@ -32,44 +31,61 @@ export default {
             user:{
                 personajeBase: require('@/assets/perfil/reemplazarP.png')
             },
-
-        
-        opcionesPersonajes: [
+            personajeSeleccionado: null,
+            
+            opcionesPersonajes: [
                 { id: 1, image: require('@/assets/perfil/reciclarP.png'), nombre: "Recicla" },
                 { id: 2, image: require('@/assets/perfil/reemplazarP.png'), nombre: "Reemplaza" },
                 { id: 3, image: require('@/assets/perfil/reduceP.png'), nombre: "Reduce"},     
                 { id: 4, image: require('@/assets/perfil/renuevaP.png'), nombre: "Renueva" },      
                 { id: 5, image: require('@/assets/perfil/reutilizarP.png'), nombre: "Reutiliza" },    
-            
-        
-    ],
-    seccionActual: 'personajes'
-    };
-},
+            ],
+            seccionActual: 'personajes'
+        };
+    },
 
     methods: {
-        cambiarPersonaje(personaje) {
+        seleccionarPersonaje(personaje) {
             this.user.personajeBase = personaje.image;
-            this.guardarPreferencias();
+            this.personajeSeleccionado = personaje;
         },
- 
+        
+        async updateAvatar() {
+            try {
+                
+                if (!this.user.personajeBase) {
+                    alert('Por favor selecciona un personaje primero');
+                    return;
+                }
+              
+                const avatarData = {
+                    personajeBase: this.user.personajeBase
+                };
+                localStorage.setItem('avatarPreferencias', JSON.stringify(avatarData));
+                
+     
+                window.dispatchEvent(new Event('storage'));
+                console.log('Avatar guardado:', this.user.personajeBase);
+                
+            } catch (error) {
+                console.error('Error al cambiar avatar:', error);
+                alert('Error al cambiar el avatar');
+            }
+        },
 
-        guardarPreferencias() {
-            localStorage.setItem('avatarPreferencias', JSON.stringify(this.user));
-        },
         cargarPreferencias() {
             const guardado = localStorage.getItem('avatarPreferencias');
             if (guardado) {
-                this.user = JSON.parse(guardado);
+                const datos = JSON.parse(guardado);
+                this.user.personajeBase = datos.personajeBase || this.user.personajeBase;
             }
         }
     },
+    
     mounted() {
         this.cargarPreferencias();
     }
 }
-
-
 </script>
 
 <style>
@@ -205,6 +221,26 @@ export default {
   .selector-seccion button {
     width: 100%;
   }
+}
+.card-btn {
+  background:#34db87;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 0.8rem 2rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-top: 20px;
+  font-size: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card-btn:hover {
+  background: #52a973;
+
 }
 
 </style>
