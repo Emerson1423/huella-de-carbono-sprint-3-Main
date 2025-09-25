@@ -530,15 +530,11 @@ export default {
      */
 
     agregarHabito(cardIndex = null) {
-      // Debug: verificar los valores
-      console.log('cardIndex recibido:', cardIndex);
-      console.log('this.habitoActual:', this.habitoActual);
-      console.log('this.cards.length:', this.cards.length);
       
       // Si se pasa un índice (desde el grid), usarlo. Si no, usar habitoActual (desde detalle)
       const indiceHabito = cardIndex !== null ? cardIndex : this.habitoActual;
       
-      console.log('indiceHabito calculado:', indiceHabito);
+      
       
       // Verificar que el índice sea válido
       if (indiceHabito === null || indiceHabito === undefined || indiceHabito >= this.cards.length) {
@@ -549,7 +545,7 @@ export default {
       
       const habitoSeleccionado = this.cards[indiceHabito];
       
-      console.log('habitoSeleccionado:', habitoSeleccionado);
+ 
       
       // Verificar que el hábito existe
       if (!habitoSeleccionado) {
