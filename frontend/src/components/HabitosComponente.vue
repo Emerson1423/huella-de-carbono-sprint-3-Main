@@ -519,11 +519,45 @@ export default {
      */
     agregarHabito() {
       const habitoSeleccionado = this.cards[this.habitoActual];
-      alert(`¡Hábito "${habitoSeleccionado.title}" agregado exitosamente! 🌱`);
       
-
-
+      // Obtener hábitos actuales del localStorage
+      let habitosGuardados = JSON.parse(localStorage.getItem('userHabitos') || '[]');
+      
+      // Verificar límite máximo de 3 hábitos
+      if (habitosGuardados.length >= 3) {
+        alert('⚠️ Ya tienes 3 hábitos agregados. Elimina uno para agregar otro.');
+        return;
+      }
+      
+      // Verificar si el hábito ya existe
+      const habitoExiste = habitosGuardados.some(habito => habito.id === this.habitoActual);
+      if (habitoExiste) {
+        alert('⚠️ Este hábito ya está en tu lista.');
+        return;
+      }
+     
+      const nuevoHabito = {
+        id: this.habitoActual,
+        title: habitoSeleccionado.title,
+        desc: habitoSeleccionado.desc,
+        fechaAgregado: new Date().toISOString(),
+        
+      };
+      
+      
+      habitosGuardados.push(nuevoHabito);
+      
+      // Guardar en localStorage
+      localStorage.setItem('userHabitos', JSON.stringify(habitosGuardados));
+      
+      // Emitir evento personalizado para notificar al componente de perfil
+      window.dispatchEvent(new CustomEvent('habitoAgregado', { 
+        detail: nuevoHabito 
+      }));
+      
+      alert(`✅ ¡Hábito "${habitoSeleccionado.title}" agregado exitosamente!`);
     }
+
   }
 }
 </script>
