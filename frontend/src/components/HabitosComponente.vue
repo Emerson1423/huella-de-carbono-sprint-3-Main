@@ -8,7 +8,7 @@
     <img v-else :src="cards[habitoActual].img" :alt="cards[habitoActual].title" class="img-hab" />
 
 
-    <div v-if="!mostrarDetalle">
+      <div v-if="!mostrarDetalle">
       <div class="cards-grid">
         <div 
           v-for="(card, idx) in cards" 
@@ -20,7 +20,8 @@
           <img :src="card.img" :alt="card.title" class="card-img" />
           <h2 class="card-title">{{ card.title }}</h2>
           <p class="card-desc">{{ card.desc }}</p>
-          <button class="card-btn" @click.stop="agregarHabito">Agregar</button>
+          <!-- Aquí debe pasar el índice -->
+          <button class="card-btn" @click.stop="agregarHabito(idx)">Agregar</button>
         </div>
       </div>
     </div>
@@ -61,6 +62,7 @@ export default {
       // array de hábitos
       cards: [
         {
+          id: 1,
           img: require('@/assets/img/agua.jpeg'),
           title: 'Ahorra agua',
           desc: 'Pequeños cambios en tu rutina diaria pueden hacer una gran diferencia en el ahorro de agua. Cierra la llave mientras te lavas los dientes, toma duchas más cortas y repara las fugas inmediatamente.',
@@ -106,6 +108,7 @@ export default {
   
         
         {
+          id: 2,
           img: require('@/assets/img/plastico.jpeg'),
           title: 'Reduce el uso de plástico',
           desc: 'Opta por productos reutilizables y evita el plástico de un solo uso. Usa botellas de agua reutilizables, bolsas de tela para las compras y contenedores de vidrio para almacenar alimentos.',
@@ -147,6 +150,7 @@ export default {
           ]
         },
         {
+          id: 3,
           img: require('@/assets/img/transporte.jpeg'),
           title: 'Utiliza transporte sostenible',
           desc: 'Caminar, andar en bicicleta o usar transporte público reduce tu huella de carbono. También puedes compartir vehículo con otros o considerar vehículos eléctricos.',
@@ -187,6 +191,7 @@ export default {
           ]
         },
         {
+          id: 4,
           img: require('@/assets/img/clasificar.jpeg'),
           title: 'Recicla y reutiliza',
           desc: 'Dale una segunda vida a los objetos y reduce la cantidad de residuos que generas. Separa correctamente tus residuos y encuentra formas creativas de reutilizar materiales.',
@@ -229,6 +234,7 @@ export default {
         
         },
         {
+          id: 5,
           img: require('@/assets/img/local.jpeg'),
           title: 'Consume local y de temporada',
           desc: 'Apoya a los productores locales y reduce la huella de transporte de tus alimentos. Los productos de temporada son más nutritivos y tienen mejor sabor.',
@@ -268,6 +274,7 @@ export default {
           ]
         },
         {
+          id: 6,
           img: require('@/assets/img/energia.jpeg'),
           title: 'Ahorra energía',
           desc: 'Apaga las luces y desconecta los aparatos electrónicos cuando no los estés usando. Usa bombillas LED y aprovecha la luz natural durante el día.',
@@ -310,6 +317,7 @@ export default {
           ]
         },
         {
+          id: 7,
           img: require('@/assets/img/arbol.jpeg'),
           title: 'Planta un árbol',
           desc: 'Los árboles ayudan a limpiar el aire y proporcionan hábitats para la fauna. Participar en actividades de reforestación es una excelente manera de contribuir al medio ambiente.',
@@ -353,6 +361,7 @@ export default {
           ]
         },
         {
+          id: 8,
           img: require('@/assets/img/edu.jpeg'),
           title: 'Educación ambiental',
           desc: 'Infórmate y comparte tus conocimientos sobre sostenibilidad con los demás. La educación es clave para crear conciencia ambiental en tu comunidad.',
@@ -395,6 +404,7 @@ export default {
           ]
         },
         {
+          id: 9,
           img: require('@/assets/img/ecologicos.jpeg'),
           title: 'Compra productos ecológicos',
           desc: 'Elige productos que sean amigables con el medio ambiente y evita los químicos dañinos. Lee las etiquetas y busca certificaciones ambientales.',
@@ -436,6 +446,7 @@ export default {
           ]
         },
         {
+          id: 10,
           img: require('@/assets/img/natu.jpeg'),
           title: 'Apoya iniciativas verdes',
           desc: 'Participa en proyectos comunitarios que promuevan la sostenibilidad y el cuidado del medio ambiente. Tu participación puede inspirar a otros.',
@@ -517,8 +528,35 @@ export default {
     /**
      * Agrega el hábito actual
      */
-    agregarHabito() {
-      const habitoSeleccionado = this.cards[this.habitoActual];
+
+    agregarHabito(cardIndex = null) {
+      // Debug: verificar los valores
+      console.log('cardIndex recibido:', cardIndex);
+      console.log('this.habitoActual:', this.habitoActual);
+      console.log('this.cards.length:', this.cards.length);
+      
+      // Si se pasa un índice (desde el grid), usarlo. Si no, usar habitoActual (desde detalle)
+      const indiceHabito = cardIndex !== null ? cardIndex : this.habitoActual;
+      
+      console.log('indiceHabito calculado:', indiceHabito);
+      
+      // Verificar que el índice sea válido
+      if (indiceHabito === null || indiceHabito === undefined || indiceHabito >= this.cards.length) {
+        console.error('Índice de hábito inválido:', indiceHabito);
+        alert('❌ Error: No se pudo identificar el hábito seleccionado.');
+        return;
+      }
+      
+      const habitoSeleccionado = this.cards[indiceHabito];
+      
+      console.log('habitoSeleccionado:', habitoSeleccionado);
+      
+      // Verificar que el hábito existe
+      if (!habitoSeleccionado) {
+        console.error('Hábito no encontrado en índice:', indiceHabito);
+        alert('❌ Error: Hábito no encontrado.');
+        return;
+      }
       
       // Obtener hábitos actuales del localStorage
       let habitosGuardados = JSON.parse(localStorage.getItem('userHabitos') || '[]');
@@ -529,34 +567,37 @@ export default {
         return;
       }
       
+      // Usar el título como identificador único si no hay ID
+      const identificadorHabito = habitoSeleccionado.id || habitoSeleccionado.title;
+      
       // Verificar si el hábito ya existe
-      const habitoExiste = habitosGuardados.some(habito => habito.id === this.habitoActual);
+      const habitoExiste = habitosGuardados.some(habito => 
+        (habito.id && habito.id === identificadorHabito) || 
+        (habito.title === habitoSeleccionado.title)
+      );
+      
       if (habitoExiste) {
         alert('⚠️ Este hábito ya está en tu lista.');
         return;
       }
-     
+    
       const nuevoHabito = {
-        id: this.habitoActual,
+        id: identificadorHabito,
         title: habitoSeleccionado.title,
         desc: habitoSeleccionado.desc,
         fechaAgregado: new Date().toISOString(),
-        
       };
       
-      
       habitosGuardados.push(nuevoHabito);
-      
-      // Guardar en localStorage
       localStorage.setItem('userHabitos', JSON.stringify(habitosGuardados));
       
-      // Emitir evento personalizado para notificar al componente de perfil
       window.dispatchEvent(new CustomEvent('habitoAgregado', { 
         detail: nuevoHabito 
       }));
       
       alert(`✅ ¡Hábito "${habitoSeleccionado.title}" agregado exitosamente!`);
     }
+      
 
   }
 }
