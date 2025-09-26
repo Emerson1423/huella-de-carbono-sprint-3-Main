@@ -267,7 +267,7 @@ export default {
       
       try {
         const token = this.obtenerToken();
-        const response = await axios.put('https://localhost:3000/api/perfil', {
+        const response = await axios.put('http://localhost:3000/api/perfil', {
           usuario: this.usuarioEditado.usuario
         }, {
           headers: {
