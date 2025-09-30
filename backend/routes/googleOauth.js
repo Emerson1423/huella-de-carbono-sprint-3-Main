@@ -11,22 +11,37 @@ router.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'], prompt: 'select_account' })
 );
 
-// Callback de Google
 router.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    // Genera un JWT para el usuario autenticado
-    const token = jwt.sign(
-      {
-        id: req.user.id,
-        usuario: req.user.usuario,
-        correo: req.user.correo
-      },
-      JWT_SECRET,
-      { expiresIn: '4h' }
-    );
-    // Redirige al frontend con el token como parámetro en la URL
-    res.redirect(`http://localhost:8080/login-google?token=${token}`);
+   
+    
+    if (req.user.exists) {
+      const token = jwt.sign(
+        {
+          id: req.user.id,
+          usuario: req.user.usuario,
+          correo: req.user.correo
+        },
+        JWT_SECRET,
+        { expiresIn: '4h' }
+      );
+      res.redirect(`http://localhost:8080/login-google?token=${token}`);
+      
+    } else {
+      const tempToken = jwt.sign(
+        {
+          email: req.user.correo || req.user.email, 
+          name: req.user.name || req.user.nombre,
+          verified: false
+        },
+        JWT_SECRET,
+        { expiresIn: '10m' }
+      );
+      
+      
+      res.redirect(`http://localhost:8080/completar-registro-google?temp_token=${tempToken}`);
+    }
   }
 );
 

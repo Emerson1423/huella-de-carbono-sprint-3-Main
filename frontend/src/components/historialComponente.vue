@@ -1,28 +1,10 @@
 <template>
-
-<!---<header>
-  <div>
-    <button @click="showLogoutModal = true" class="logout-btn">
-      <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-    </button>
-    <div v-if="showLogoutModal" class="modal-overlay">
-      <div class="modal-content">
-        <h3>Confirmar Cierre de Sesión</h3>
-        <p>¿Estás seguro de que deseas salir de tu cuenta?</p>
-        <div class="modal-actions">
-          <button @click="logout" class="btn-confirm">Sí, Cerrar Sesión</button>
-          <button @click="showLogoutModal = false" class="btn-cancel">Cancelar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</header>  -->
+ 
 
   <div class="historial-page">
     <div class="header">
       <h1>📚 Tu Historial Completo</h1>
-      <button @click="irACalculadora" class="btn-action">➕ Nuevo Cálculo</button>
+      <button @click="irACalculadora" class="btn-action">➕ Nueva Calculación</button>
     </div>
 
     <!-- Filtros -->
@@ -35,9 +17,9 @@
 
     <!-- Lista de registros -->
     <div v-if="cargando" class="cargando">Cargando tu historial...</div>
-    
+
     <div v-else-if="registrosFiltrados.length === 0" class="sin-registros">
-      <p>No tienens registros guardados aún.</p>
+      <p>No tienes registros guardados aún.</p>
     </div>
 
     <div v-else class="lista-registros">
@@ -45,18 +27,17 @@
         <div class="registro-header">
           <span class="fecha">{{ formatearFecha(registro.fecha) }}</span>
           <span class="emisiones">
-            {{ registro.total_emisiones }} kg CO₂
-            <span :class="['nivel', getNivelEmisiones(registro.total_emisiones)]"></span>
+            {{ registro.puntuacionTotal }} kg CO₂
+            <span :class="['nivel', registro.categoria.toLowerCase()]"></span>
           </span>
         </div>
-        
-        <div class="registro-detalles">
 
-          <p><strong>Transporte principal:</strong> {{ formatoTransporte(registro.transporte) }}</p>
-          <p><strong>Kilómetros/mes:</strong> {{ registro.kilometros }} km</p>
-          <p><strong>Reciclaje:</strong> {{ formatoReciclaje(registro.reciclaje) }}</p>
-          <p><strong>pago de energia mensual:</strong> {{ registro.electricidad}} $</p>
-          <p><strong>energia Renovable:</strong> {{ registro.energiaRenovable}}</p>
+        <div class="registro-detalles">
+          <p><strong>Transporte principal:</strong> {{ formatoTransporte(registro.detalles.transporte) }}</p>
+          <p><strong>Kilómetros/mes:</strong> {{ registro.detalles.kilometros }} km</p>
+          <p><strong>Reciclaje:</strong> {{ formatoReciclaje(registro.detalles.reciclaje.join(',')) }}</p>
+          <p><strong>Consumo mensual de energia:</strong> {{ registro.detalles.electricidad }} KWM</p>
+          <p><strong>Energía Renovable:</strong> {{ registro.detalles.energiaRenovable }}</p>
         </div>
       </div>
     </div>
@@ -79,36 +60,24 @@ export default {
     await this.cargarHistorial();
   },
   methods: {
-
-     async logout() {
+    async logout() {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          console.warn('No hay token almacenado');
           this.forceLogout();
           return;
         }
-
         const response = await fetch('http://localhost:3000/api/logout', {
           method: 'POST',
-          headers: { 
+          headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
-
-        // Verificación más robusta de la respuesta
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || 'Error al cerrar sesión');
-        }
-
-        // Limpieza exitosa
+        if (!response.ok) throw new Error('Error al cerrar sesión');
         this.forceLogout();
-        
       } catch (error) {
         console.error('Error en logout:', error.message);
-        // Mostrar mensaje al usuario (asegúrate de tener un sistema de notificaciones)
         this.$toast?.error(error.message || 'Error al cerrar sesión');
       } finally {
         this.showLogoutModal = false;
@@ -116,53 +85,38 @@ export default {
     },
 
     forceLogout() {
-      // Limpieza completa del estado de autenticación
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      
-      // Redirigir a la página de login
-      this.$router.push('/').catch(() => {
-       
-      });
+      this.$router.push('/').catch(() => {});
     },
 
     async cargarHistorial() {
-          try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-              this.$router.push('/login');
-              return;
-            }
-
-            const response = await fetch('http://localhost:3000/api/historial', {
-              headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.status === 401) {
-              // Token inválido o expirado
-              this.forceLogout();
-              return;
-            }
-
-            if (!response.ok) throw new Error('Error al cargar historial');
-            
-            this.registros = await response.json();
-            this.registrosFiltrados = this.registros;
-            this.extraerAniosDisponibles();
-          } catch (error) {
-            console.error(error);
-            this.$toast.error('Error al cargar historial');
-          } finally {
-            this.cargando = false;
-          }
-        },
-    extraerAniosDisponibles() {
-      const anios = new Set();
-      this.registros.forEach(reg => {
-        anios.add(new Date(reg.fecha).getFullYear());
-      });
-      this.aniosDisponibles = Array.from(anios).sort((a, b) => b - a);
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          this.$router.push('/login');
+          return;
+        }
+        const response = await fetch('http://localhost:3000/api/historial', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.status === 401) {
+          this.forceLogout();
+          return;
+        }
+        if (!response.ok) throw new Error('Error al cargar historial');
+        const data = await response.json();
+        this.registros = data.data || [];
+        this.registrosFiltrados = this.registros;
+        this.extraerAniosDisponibles();
+      } catch (error) {
+        console.error(error);
+        this.$toast?.error('Error al cargar historial');
+      } finally {
+        this.cargando = false;
+      }
     },
+
 
     filtrarRegistros() {
       if (this.filtroAnio === 'todos') {
@@ -175,6 +129,7 @@ export default {
     },
 
     formatearFecha(fecha) {
+      if (!fecha) return 'N/A';
       const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(fecha).toLocaleDateString('es-ES', opciones);
     },
@@ -199,12 +154,6 @@ export default {
       }).join(', ');
     },
 
-    getNivelEmisiones(emisiones) {
-      if (emisiones < 50) return 'bajo';
-      if (emisiones < 100) return 'medio';
-      return 'alto';
-    },
-
     irACalculadora() {
       this.$router.push('/');
     }
@@ -213,6 +162,36 @@ export default {
 </script>
 
 <style scoped>
+
+.stats-panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #f3f4f6;
+}
+.stats-panel h2 {
+  margin-bottom: .5rem;
+}
+.lista-registros {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.registro-item {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #fff;
+}
+.registro-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+.nivel.baja { color: green; }
+.nivel.media { color: orange; }
+.nivel.alta { color: red; }
+
 .logout-btn {
   position: absolute;
   top: 20px;
@@ -283,7 +262,7 @@ export default {
 .historial-page {
   max-width: 800px;
   margin: 0 auto;
-  padding: 90px;
+  padding: 20px;
   font-family: 'Poppins', sans-serif;
 }
 

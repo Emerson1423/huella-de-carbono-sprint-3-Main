@@ -39,14 +39,69 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.post('/completar-registro-google', async (req, res) => {
+  const { temp_token, usuario, contraseña } = req.body;
+  
+  try {
+    const decoded = jwt.verify(temp_token, JWT_SECRET);
+    
+    if (decoded.verified) {
+      return res.status(400).json({ error: 'Token ya utilizado' });
+    }
+
+    // Verificar que no exista por usuario O correo
+    const [existingUser] = await pool.query(
+      'SELECT * FROM usuarios WHERE usuario = ? OR correo = ?', 
+      [usuario, decoded.email]
+    );
+    
+    if (existingUser.length > 0) {
+      return res.status(400).json({ error: 'El usuario o correo ya existe' });
+    }
+
+    // Crear usuario SIN google_id
+    const hashedPassword = await bcrypt.hash(contraseña, 10);
+    const [result] = await pool.query(
+      'INSERT INTO usuarios (usuario, correo, contraseña) VALUES (?, ?, ?)', 
+      [usuario, decoded.email, hashedPassword]
+    );
+
+    // Token final
+    const token = jwt.sign(
+      { 
+        id: result.insertId, 
+        usuario: usuario, 
+        correo: decoded.email 
+      }, 
+      JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+
+    res.status(201).json({ 
+      message: 'Registro completado exitosamente',
+      token,
+      user: { id: result.insertId, usuario, correo: decoded.email }
+    });
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(400).json({ error: 'Token inválido o expirado' });
+  }
+});
+
 router.post('/logout', authenticateToken, (req, res) => {
   res.json({ success: true, message: 'Sesión cerrada exitosamente' });
 });
 
 router.get('/verificar-token', authenticateToken, (req, res) => {
-  res.json({ valido: true });
+  res.json({ 
+    valido: true, 
+    user: {
+      id: req.user.id,
+      usuario: req.user.usuario,
+      correo: req.user.correo
+    }
+  });
 });
-
-
 
 module.exports = router;

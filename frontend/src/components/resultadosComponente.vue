@@ -5,7 +5,8 @@
      <!-- Resultado calculado -->
     <div class="resultado" v-if="resultado">
       <h2>📊 Resultado:</h2>
-      <p><strong>Total de emisiones:</strong> {{ resultado.puntuacionTotal }} kg CO₂</p>
+      <!-- ✅ CORREGIDO: Mostrar kgCO2 o puntuacionTotal -->
+      <p><strong>Total de emisiones:</strong> {{ resultado.kgCO2 || resultado.puntuacionTotal || 0 }} kg CO₂</p>
       
       <!-- Representación visual de la huella -->
       <div class="huella-visual">
@@ -34,13 +35,15 @@
       <h2>📝 Tus datos:</h2>
       <p><strong>Kilómetros/mes:</strong> {{ datosOriginales.kilometros }} km</p>
       <p><strong>Transporte:</strong> {{ formatTransporte(datosOriginales.transporte) }}</p>
-      <p><strong>Consumo eléctrico:</strong> {{ datosOriginales.electricidad }}</p>
+      <p><strong>Consumo eléctrico:</strong> {{ datosOriginales.electricidad }} kWh</p>
       <p><strong>Energía renovable:</strong> {{ datosOriginales.energiaRenovable === 'si' ? 'Sí ♻️' : 'No ⚠️' }}</p>
       <p><strong>Reciclaje:</strong> {{ formatReciclaje(datosOriginales.reciclaje) }}</p>
     </div>
 
    
-    <button @click="guardarEnHistorial" class="guardar-btn">💾 Guardar en historial</button>
+    <button @click="guardarEnHistorial" class="guardar-btn" :disabled="guardando">
+      {{ guardando ? '⏳ Guardando...' : '💾 Guardar en historial' }}
+    </button>
     <button @click="volverAFormulario" class="volver-btn">✏️ Volver al formulario</button>
 
    
@@ -56,6 +59,7 @@
 
 <script>
 import ViewCard from '@/components/viewCardComponent.vue';
+
 export default {
   components: {
     ViewCard
@@ -65,19 +69,20 @@ export default {
       resultado: null,
       datosOriginales: null,
       maxPuntuacion: 150,
-      guardando: false // Nuevo estado para evitar múltiples submits
+      guardando: false
     };
   },
   computed: {
     porcentajeHuella() {
       if (!this.resultado) return 0;
-      return Math.min(Math.round((this.resultado.puntuacionTotal / this.maxPuntuacion) * 100), 100);
+      // ✅ Usar kgCO2 que es el valor correcto
+      const emisiones = this.resultado.kgCO2 || this.resultado.puntuacionTotal || 0;
+      return Math.min(Math.round((emisiones / this.maxPuntuacion) * 100), 100);
     },
-    // Nueva computed para validar datos
     datosValidos() {
       return this.resultado && this.datosOriginales && 
              this.datosOriginales.kilometros !== undefined &&
-             this.resultado.puntuacionTotal !== undefined;
+             (this.resultado.kgCO2 !== undefined || this.resultado.puntuacionTotal !== undefined);
     }
   },
   created() {
@@ -85,6 +90,12 @@ export default {
       try {
         this.resultado = JSON.parse(decodeURIComponent(this.$route.query.resultado));
         this.datosOriginales = JSON.parse(decodeURIComponent(this.$route.query.datosOriginales));
+        
+        // ✅ Normalizar el resultado para asegurar puntuacionTotal
+        if (this.resultado && !this.resultado.puntuacionTotal && this.resultado.kgCO2) {
+          this.resultado.puntuacionTotal = this.resultado.kgCO2;
+        }
+        
       } catch (e) {
         console.error("Error parsing URL data:", e);
         this.$router.push('/');
@@ -102,6 +113,7 @@ export default {
       };
       return nombres[transporte] || transporte;
     },
+    
     formatReciclaje(reciclaje) {
       if (!reciclaje || reciclaje === 'no_reciclo') return 'No recicla ❌';
       if (typeof reciclaje === 'string') return `${reciclaje} ${this.getReciclajeIcon(reciclaje)}`;
@@ -111,6 +123,7 @@ export default {
       }
       return 'No recicla ❌';
     },
+    
     getReciclajeIcon(item) {
       const iconos = { 
         papel: '📄', 
@@ -121,75 +134,75 @@ export default {
       };
       return iconos[item] || '';
     },
-async guardarEnHistorial() {
-  try {
-    // 1. Verificar autenticación primero
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Debes iniciar sesión para guardar tus resultados');
-      this.$router.push('/login'); // Redirige al login
-      return;
-    }
 
-    // 2. Opcional: Verificar si el token es válido
-    const tokenValido = await this.verificarToken(token);
-    if (!tokenValido) {
-      alert('Tu sesión ha expirado, por favor inicia sesión nuevamente');
-      this.$router.push('/login');
-      return;
-    }
+    async guardarEnHistorial() {
+      if (this.guardando) return;
+      this.guardando = true;
 
-    // 3. Validar datos (tu código existente)
-    if (!this.datosValidos) {
-      alert('Datos incompletos para guardar');
-      return;
-    }
-
-    // Resto de tu lógica de guardado...
-    const payload = {
-      kilometros: this.datosOriginales.kilometros,
-      transporte: this.datosOriginales.transporte,
-      electricidad: parseFloat(this.datosOriginales.electricidad),
-      energiaRenovable: this.datosOriginales.energiaRenovable,
-      reciclaje: Array.isArray(this.datosOriginales.reciclaje) 
-        ? this.datosOriginales.reciclaje 
-        : [this.datosOriginales.reciclaje],
-      total_emisiones: this.resultado.puntuacionTotal
-    };
-
-    const response = await fetch('http://localhost:3000/api/guardar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.error || 'Error al guardar');
-    }
-
-    alert('¡Datos guardados correctamente!');
-    this.$router.push('/historial');
-
-  } catch (error) {
-    console.error('Error al guardar:', error);
-    alert(`Error: ${error.message}\nVerifica que todos los campos sean válidos`);
-  }
-},
-    async verificarToken(token) {
       try {
-        const response = await fetch('http://localhost:3000/api/verificar-token', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Debes iniciar sesión para guardar tus resultados');
+          this.$router.push('/login');
+          return;
+        }
+
+        if (!this.datosValidos) {
+          alert('Datos incompletos para guardar');
+          return;
+        }
+
+        // ✅ Usar kgCO2 o puntuacionTotal (el que exista)
+        const totalEmisiones = this.resultado.kgCO2 || this.resultado.puntuacionTotal;
+
+        const payload = {
+          kilometros: this.datosOriginales.kilometros,
+          transporte: this.datosOriginales.transporte,
+          electricidad: parseFloat(this.datosOriginales.electricidad),
+          energiaRenovable: this.datosOriginales.energiaRenovable,
+          reciclaje: Array.isArray(this.datosOriginales.reciclaje) 
+            ? this.datosOriginales.reciclaje 
+            : [this.datosOriginales.reciclaje],
+          total_emisiones: totalEmisiones
+        };
+
+        const response = await fetch('http://localhost:3000/api/guardar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
         });
-        return response.ok;
+
+        const data = await response.json();
+        
+        if (response.status === 409) {
+          alert(`⚠️ ${data.mensaje}\n\nPuedes ver tu historial, pero no guardar un nuevo cálculo este mes.`);
+          this.$router.push('/historial');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Error al guardar');
+        }
+
+        alert('✅ ¡Datos guardados correctamente!');
+        this.$router.push('/historial');
+
       } catch (error) {
-        return false;
+        console.error('Error al guardar:', error);
+        
+        if (error.message.includes('Ya realizaste')) {
+          alert(`📅 ${error.message}\n\nPodrás hacer otro cálculo el próximo mes.`);
+        } else {
+          alert(`❌ Error: ${error.message}\nVerifica que todos los campos sean válidos`);
+        }
+      } finally {
+        this.guardando = false;
       }
     },
+
     volverAFormulario() {
       this.$router.push('/huella');
     }
@@ -205,7 +218,7 @@ async guardarEnHistorial() {
   background: #f8fafc;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  padding: 80px 24px;
+  padding: 32px 24px;
   font-family: 'Poppins',  sans-serif;
 }
 
@@ -335,8 +348,13 @@ small {
   color: #fff;
 }
 
-.guardar-btn:hover {
+.guardar-btn:hover:not(:disabled) {
   background: #1565c0;
+}
+
+.guardar-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .volver-btn {
