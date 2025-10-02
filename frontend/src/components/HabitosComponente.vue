@@ -530,69 +530,88 @@ export default {
      */
 
     agregarHabito(cardIndex = null) {
-      
-      // Si se pasa un índice (desde el grid), usarlo. Si no, usar habitoActual (desde detalle)
-      const indiceHabito = cardIndex !== null ? cardIndex : this.habitoActual;
-      
-      
-      
-      // Verificar que el índice sea válido
-      if (indiceHabito === null || indiceHabito === undefined || indiceHabito >= this.cards.length) {
-        console.error('Índice de hábito inválido:', indiceHabito);
-        alert('❌ Error: No se pudo identificar el hábito seleccionado.');
-        return;
-      }
-      
-      const habitoSeleccionado = this.cards[indiceHabito];
-      
- 
-      
-      // Verificar que el hábito existe
-      if (!habitoSeleccionado) {
-        console.error('Hábito no encontrado en índice:', indiceHabito);
-        alert('❌ Error: Hábito no encontrado.');
-        return;
-      }
-      
-      // Obtener hábitos actuales del localStorage
-      let habitosGuardados = JSON.parse(localStorage.getItem('userHabitos') || '[]');
-      
-      // Verificar límite máximo de 3 hábitos
-      if (habitosGuardados.length >= 3) {
-        alert('⚠️ Ya tienes 3 hábitos agregados. Elimina uno para agregar otro.');
-        return;
-      }
-      
-      // Usar el título como identificador único si no hay ID
-      const identificadorHabito = habitoSeleccionado.id || habitoSeleccionado.title;
-      
-      // Verificar si el hábito ya existe
-      const habitoExiste = habitosGuardados.some(habito => 
-        (habito.id && habito.id === identificadorHabito) || 
-        (habito.title === habitoSeleccionado.title)
-      );
-      
-      if (habitoExiste) {
-        alert('⚠️ Este hábito ya está en tu lista.');
-        return;
-      }
-    
-      const nuevoHabito = {
-        id: identificadorHabito,
-        title: habitoSeleccionado.title,
-        desc: habitoSeleccionado.desc,
-        fechaAgregado: new Date().toISOString(),
-      };
-      
-      habitosGuardados.push(nuevoHabito);
-      localStorage.setItem('userHabitos', JSON.stringify(habitosGuardados));
-      
-      window.dispatchEvent(new CustomEvent('habitoAgregado', { 
-        detail: nuevoHabito 
-      }));
-      
-      alert(`✅ ¡Hábito "${habitoSeleccionado.title}" agregado exitosamente!`);
-    }
+  // Si se pasa un índice (desde el grid), usarlo. Si no, usar habitoActual (desde detalle)
+  const indiceHabito = cardIndex !== null ? cardIndex : this.habitoActual;
+  
+  // Verificar que el índice sea válido
+  if (indiceHabito === null || indiceHabito === undefined || indiceHabito >= this.cards.length) {
+    console.error('Índice de hábito inválido:', indiceHabito);
+    alert('❌ Error: No se pudo identificar el hábito seleccionado.');
+    return;
+  }
+  
+  const habitoSeleccionado = this.cards[indiceHabito];
+  
+  // Verificar que el hábito existe
+  if (!habitoSeleccionado) {
+    console.error('Hábito no encontrado en índice:', indiceHabito);
+    alert('❌ Error: Hábito no encontrado.');
+    return;
+  }
+  
+  // CAMBIO 1: Obtener el ID del usuario actual
+  const user = localStorage.getItem('user');
+  if (!user) {
+    alert('❌ Debes iniciar sesión para agregar hábitos.');
+    return;
+  }
+  
+  let userData;
+  try {
+    userData = JSON.parse(user);
+  } catch (error) {
+    console.error('Error al parsear usuario:', error);
+    alert('❌ Error al obtener información del usuario.');
+    return;
+  }
+  
+  // CAMBIO 2: Crear identificador único del usuario
+  const usuarioId = userData.id || userData.correo || userData.usuario;
+
+  const claveHabitos = `userHabitos_${usuarioId}`;
+  let habitosGuardados = JSON.parse(localStorage.getItem(claveHabitos) || '[]');
+
+console.log('Usuario actual:', localStorage.getItem('user'));
+console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k => k.startsWith('userHabitos_')));
+  
+  // Verificar límite máximo de 3 hábitos
+  if (habitosGuardados.length >= 3) {
+    alert('⚠️ Ya tienes 3 hábitos agregados. Elimina uno para agregar otro.');
+    return;
+  }
+  
+  // Usar el título como identificador único si no hay ID
+  const identificadorHabito = habitoSeleccionado.id || habitoSeleccionado.title;
+  
+  // Verificar si el hábito ya existe
+  const habitoExiste = habitosGuardados.some(habito => 
+    (habito.id && habito.id === identificadorHabito) || 
+    (habito.title === habitoSeleccionado.title)
+  );
+  
+  if (habitoExiste) {
+    alert('⚠️ Este hábito ya está en tu lista.');
+    return;
+  }
+
+  const nuevoHabito = {
+    id: identificadorHabito,
+    title: habitoSeleccionado.title,
+    desc: habitoSeleccionado.desc,
+    fechaAgregado: new Date().toISOString(),
+  };
+  
+  habitosGuardados.push(nuevoHabito);
+  
+  // CAMBIO 4: Guardar con la clave específica del usuario
+  localStorage.setItem(claveHabitos, JSON.stringify(habitosGuardados));
+  
+  window.dispatchEvent(new CustomEvent('habitoAgregado', { 
+    detail: nuevoHabito 
+  }));
+  
+  alert(`✅ ¡Hábito "${habitoSeleccionado.title}" agregado exitosamente!`);
+}
       
 
   }
