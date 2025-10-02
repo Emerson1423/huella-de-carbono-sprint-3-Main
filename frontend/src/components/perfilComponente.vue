@@ -60,7 +60,7 @@
                     </div>
                     
                     <!-- Advertencia cuando se alcanza el límite -->
-                    <div v-else class="limite-alcanzado">
+                    <div v-else-if="habitosUsuario.length === maxHabitos" class="limite-alcanzado">
                         <small>
                             <i class="fas fa-check-circle"></i>
                             Has alcanzado el límite máximo de hábitos
@@ -82,6 +82,7 @@
 import EstadisticaComponente from './estadisticaComponente.vue';
 import formsPerfilComponente from './formsPerfilComponente.vue';
 import axios from 'axios';
+
 export default {
     components: {
         formsPerfilComponente, 
@@ -92,20 +93,22 @@ export default {
         return {
             isAuthenticated: true, 
             usuario: {
-                usuario: ''},
-            habitosUsuario: [], // Array para los hábitos del usuario
-            maxHabitos: 3 // Límite máximo de hábitos
+                usuario: '',
+                id: null  // Agregar ID al objeto usuario
+            },
+            usuarioId: null,
+            habitosUsuario: [],
+            maxHabitos: 3,
+            cargando: false
         };
     },
         
     async mounted() {
-              
         await this.obtenerPerfil();
         this.cargarHabitos();
         window.addEventListener('perfilActualizado', this.onPerfilActualizado);
         window.addEventListener('userUpdated', this.onPerfilActualizado);
         window.addEventListener('habitoAgregado', this.onHabitoAgregado);
-
     },
         
     beforeUnmount() {
@@ -115,41 +118,46 @@ export default {
     },
     
     methods: {    
+        onPerfilActualizado() {
+            this.obtenerPerfil();
+        },
         
-    onPerfilActualizado(){
-    this.obtenerPerfil();
-    },
-    obtenerToken() {
-        const token = localStorage.getItem('token');
-        return token;
-    },
+        obtenerToken() {
+            const token = localStorage.getItem('token');
+            return token;
+        },
         
-    async obtenerPerfil() {
-      try {
-        this.cargando = true;
-        const token = this.obtenerToken();                
+        async obtenerPerfil() {
+            try {
+                this.cargando = true;
+                const token = this.obtenerToken();
+                
                 if (!token) {
                     console.warn('No hay token disponible');
                     this.usuario.usuario = 'Usuario';
                     return;
                 }
 
-        
-        const response = await axios.get('http://localhost:3000/api/perfil', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+                const response = await axios.get('http://localhost:3000/api/perfil', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
                 if (response.data) {
                     if (response.data.user && response.data.user.usuario) {
                         this.usuario = response.data.user;
+                        // IMPORTANTE: Establecer el usuarioId después de obtener el perfil
+                        this.usuarioId = response.data.user.id || response.data.user.correo || response.data.user.usuario;
+                        // Cargar hábitos con el nuevo usuarioId
+                        this.cargarHabitos();
                     } else {
-                        this.usuario.usuario = 'no encuentra usuario';
+                        this.usuario.usuario = 'Usuario';
                     }
                 }
                 
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error al obtener perfil:', error);
                 this.usuario.usuario = 'Usuario';
             } finally {
                 this.cargando = false;
@@ -157,29 +165,43 @@ export default {
         },
         
         /**
-         * Cargar hábitos del localStorage
+         * Cargar hábitos del localStorage (específicos del usuario)
          */
         cargarHabitos() {
-            const habitos = JSON.parse(localStorage.getItem('userHabitos') || '[]');
+            if (!this.usuarioId) {
+                console.warn('No hay usuario identificado para cargar hábitos');
+                this.habitosUsuario = [];
+                return;
+            }
+            
+            const claveHabitos = `userHabitos_${this.usuarioId}`;
+            const habitos = JSON.parse(localStorage.getItem(claveHabitos) || '[]');
             this.habitosUsuario = habitos;
+            console.log(`Hábitos cargados para usuario ${this.usuarioId}:`, habitos);
         },
 
         /**
          * Manejar cuando se agrega un nuevo hábito
          */
         onHabitoAgregado() {
-            this.cargarHabitos(); // Recargar la lista
+            this.cargarHabitos();
         },
 
         /**
          * Eliminar un hábito específico
          */
         eliminarHabito(index) {
+            if (!this.usuarioId) {
+                alert('Error: No se puede eliminar el hábito');
+                return;
+            }
+            
             if (confirm('¿Estás seguro de que quieres eliminar este hábito?')) {
                 this.habitosUsuario.splice(index, 1);
-                localStorage.setItem('userHabitos', JSON.stringify(this.habitosUsuario));
                 
-                // Emitir evento de hábito eliminado
+                const claveHabitos = `userHabitos_${this.usuarioId}`;
+                localStorage.setItem(claveHabitos, JSON.stringify(this.habitosUsuario));
+                
                 window.dispatchEvent(new CustomEvent('habitoEliminado'));
             }
         },
@@ -251,7 +273,6 @@ export default {
     gap: 55px;
 }
 
-/* ESTILOS ACTUALIZADOS PARA LA SECCIÓN DE HÁBITOS */
 .seccion-habitos {
     padding: 20px;
     background-color: #f9f9f9;
