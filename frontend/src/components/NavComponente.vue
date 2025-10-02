@@ -72,7 +72,7 @@
           <template v-if="isAuthenticated">
             <li class="nav-item dropdown" @click.stop="toggleDropdown('usuario')">
               <a href="#" class="nav-link-user-container" @click.prevent>
-                <span class="user-name">{{ userName }}</span>
+               
                 <img :src="userAvatar" alt="Avatar" class="avatar-img" />
               </a>
               <ul class="dropdown-menu" :class="{ 'active': activeDropdown === 'usuario' }">
@@ -148,9 +148,9 @@ export default {
       
       if (token && user) {
         try {
-          const userData = JSON.parse(user);
+        
           this.isAuthenticated = true;
-          this.userName = userData.usuario || userData.correo || 'Usuario';
+         
           if (avatarPrefs) {
             const avatarData = JSON.parse(avatarPrefs);
             if (avatarData.personajeBase) {
@@ -331,16 +331,7 @@ body {
   background-color: rgba(66, 185, 131, 0.1);
 }
 
-.user-name {
-  color: #42b983;
-  font-weight: bold;
-  font-size: 0.85rem;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 80px;
-}
+
 
 .avatar-img {
   width: 40px;

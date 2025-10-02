@@ -278,6 +278,7 @@ export default {
         this.usuario = response.data.user;
         this.editando = false;
         this.mostrarMensaje('Perfil actualizado exitosamente', true);
+        window.dispatchEvent(new CustomEvent('perfilActualizado'))//este se relaciona con perfilComponente, en methods 
       } catch (error) {
         console.error('Error al actualizar perfil:', error);
         this.mostrarMensaje(error.response?.data?.error || 'Error al actualizar el perfil', false);

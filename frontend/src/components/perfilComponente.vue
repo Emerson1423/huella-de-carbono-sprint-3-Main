@@ -2,7 +2,7 @@
     <!-- Mostrar contenido solo si está autenticado -->
     <template v-if="isAuthenticated">
         <div class="header-perfil">
-            <h1><i class="fas fa-leaf"></i> Hola, {{ nombreUsuario }}</h1> 
+            <h1><i class="fas fa-leaf"></i> Hola, {{ usuario.usuario }}</h1> 
         </div>
         
         <div class="contenido-perfil">
@@ -81,7 +81,7 @@
 <script>
 import EstadisticaComponente from './estadisticaComponente.vue';
 import formsPerfilComponente from './formsPerfilComponente.vue';
-
+import axios from 'axios';
 export default {
     components: {
         formsPerfilComponente, 
@@ -91,45 +91,68 @@ export default {
     data() {
         return {
             isAuthenticated: true, 
-            nombreUsuario: 'Usuario Ejemplo',
+            usuario: {
+                usuario: ''},
             habitosUsuario: [], // Array para los hábitos del usuario
             maxHabitos: 3 // Límite máximo de hábitos
         };
     },
-    
-    mounted() {
-        this.checkAuthStatus();
-        this.cargarHabitos();
         
-        // Escuchar eventos
-        window.addEventListener('storage', this.checkAuthStatus);
-        window.addEventListener('userLoggedIn', this.checkAuthStatus);
+    async mounted() {
+              
+        await this.obtenerPerfil();
+        this.cargarHabitos();
+        window.addEventListener('perfilActualizado', this.onPerfilActualizado);
+        window.addEventListener('userUpdated', this.onPerfilActualizado);
         window.addEventListener('habitoAgregado', this.onHabitoAgregado);
+
     },
-    
+        
     beforeUnmount() {
-        window.removeEventListener('storage', this.checkAuthStatus);
-        window.removeEventListener('userLoggedIn', this.checkAuthStatus);
+        window.removeEventListener('perfilActualizado', this.onPerfilActualizado);
+        window.removeEventListener('userUpdated', this.onPerfilActualizado);   
         window.removeEventListener('habitoAgregado', this.onHabitoAgregado);
     },
     
-    methods: {
-        checkAuthStatus() {
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-            
-            if (token && user) {
-                try {
-                    const userData = JSON.parse(user);
-                    this.isAuthenticated = true;
-                    this.nombreUsuario = userData.usuario || userData.correo || 'Usuario';
-                } catch (error) {
-                    console.error('Error parsing user data:', error);
-                    this.isAuthenticated = false;
+    methods: {    
+        
+    onPerfilActualizado(){
+    this.obtenerPerfil();
+    },
+    obtenerToken() {
+        const token = localStorage.getItem('token');
+        return token;
+    },
+        
+    async obtenerPerfil() {
+      try {
+        this.cargando = true;
+        const token = this.obtenerToken();                
+                if (!token) {
+                    console.warn('No hay token disponible');
+                    this.usuario.usuario = 'Usuario';
+                    return;
                 }
-            } else {
-                this.isAuthenticated = false;
-                this.nombreUsuario = '';
+
+        
+        const response = await axios.get('http://localhost:3000/api/perfil', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+                if (response.data) {
+                    if (response.data.user && response.data.user.usuario) {
+                        this.usuario = response.data.user;
+                    } else {
+                        this.usuario.usuario = 'no encuentra usuario';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                this.usuario.usuario = 'Usuario';
+            } finally {
+                this.cargando = false;
             }
         },
         
