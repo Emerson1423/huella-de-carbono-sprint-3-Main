@@ -1,6 +1,6 @@
 <template> 
 <NavComponente></NavComponente>
-  
+
   <div class="login-page">  
   <div class="caja">
   <form @submit.prevent="handleSubmit" class="login-form">
@@ -53,7 +53,7 @@
   </form>
 
   </div> 
-</div>
+  </div>
 </template>
 
 <script>
@@ -134,7 +134,7 @@ async handleSubmit() {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("@/assets/img/fondoS3.png");
+  background-image: url("@/assets/img/FondoLR.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

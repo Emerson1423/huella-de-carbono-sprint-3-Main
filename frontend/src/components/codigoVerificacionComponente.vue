@@ -149,7 +149,7 @@ export default {
 .codigo-bg {
   position: fixed;
   min-height: 100vh;
-  background-image: url("@/assets/img/fondoS3.png");
+  background-image: url("@/assets/img/FondoLR.png");
   background-size: cover;
   background-size: cover;
   background-position: center;

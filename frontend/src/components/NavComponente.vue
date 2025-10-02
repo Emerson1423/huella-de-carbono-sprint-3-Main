@@ -247,16 +247,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
   height: 60px;
   position: relative;
 }
 
 .logo {
-  position: absolute;
-  left: 20px;
+  margin-right:auto;
+  margin-left: 20px;
+  padding-left: 0;
   z-index: 1001;
 }
 
