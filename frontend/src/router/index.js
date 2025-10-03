@@ -102,6 +102,11 @@ const routes = [
   name: 'CompletarRegistroGoogle',
   component: () => import('../views/completarRegistroview.vue'),
   },
+  {
+    path: '/eventos',
+    name: 'eventos',
+    component: () => import('../views/eventosView.vue')
+  }
 
 
 ];

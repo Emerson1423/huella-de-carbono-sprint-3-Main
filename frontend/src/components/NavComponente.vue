@@ -49,7 +49,7 @@
                 <router-link to="/habitos" class="dropdown-link" @click="closeAll">Hábitos</router-link>
               </li>
               <li class="dropdown-item">
-                <router-link to="/" class="dropdown-link" @click="closeAll">Eventos</router-link>
+                <router-link to="/eventos" class="dropdown-link" @click="closeAll">Eventos</router-link>
               </li>
               <li class="dropdown-item">
                 <router-link to="/" class="dropdown-link" @click="closeAll">Entretenimiento</router-link>
