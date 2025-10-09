@@ -5,7 +5,7 @@
     <div class="caja">
 
       <form @submit.prevent="handleRegister" class="register-form">
-        <h1>Registrarte</h1>
+        <h1>Registrate</h1>
         
         <div class="campo">
           <input v-model="usuario" placeholder="Usuario" required class="input">
@@ -136,7 +136,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 
 .register-page {
   position:fixed;

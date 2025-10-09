@@ -1,9 +1,9 @@
 <template>
- 
+
 
   <div class="historial-page">
-    <div class="header">
-      <h1>📚 Tu Historial Completo</h1>
+    <div class="historial-header">
+      <h1>Tu Historial Completo</h1>
       <button @click="irACalculadora" class="btn-action">➕ Nueva Calculación</button>
     </div>
 
@@ -155,7 +155,7 @@ export default {
     },
 
     irACalculadora() {
-      this.$router.push('/');
+      this.$router.push('/huella');
     }
   }
 }
@@ -266,7 +266,7 @@ export default {
   font-family: 'Poppins', sans-serif;
 }
 
-.header {
+.historial-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -274,13 +274,18 @@ export default {
 }
 
 .btn-action {
-  background: #4CAF50;
+  background: #2e7d32;
   color: white;
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
+  margin-top: 160px;
+  font-family: 'Poppins', sans-serif;
+
 }
+.btn-action:hover { background: #164c18; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
+
 
 .filtros {
   margin-bottom: 20px;

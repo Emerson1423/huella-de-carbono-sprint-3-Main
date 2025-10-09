@@ -210,7 +210,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 
 .historial {
   max-width: 500px;

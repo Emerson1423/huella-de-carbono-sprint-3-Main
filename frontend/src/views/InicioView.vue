@@ -36,7 +36,7 @@
       <ViewCard title="Calcula tu huella" link="/huella" icon="Huella.png" />      
       <ViewCard title="Recursos Ambientales" link="/articulos" icon="Articulo.png" />
       <ViewCard title="Hábitos" link="/habitos" icon="habitos.png" />
-      <ViewCard title="Eventos" link="/" icon="Eventos.png" />
+      <ViewCard title="Eventos" link="/eventos" icon="Eventos.png" />
       <ViewCard title="Entretenimiento" link="/" icon="Entretenimiento.png" />
     </div>
     <footer class="footer">
@@ -48,7 +48,7 @@
 <script>
 import navComponente from '@/components/NavComponente.vue';
 import ViewCard from '@/components/viewCardComponent.vue';
-
+import '@/Style.css';
 export default {
   components: {
     navComponente,
@@ -57,7 +57,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .contenido-inicio {
   max-width: 1200px;
   margin: 0 auto;
@@ -69,12 +69,11 @@ export default {
 }
 .slideshow-container {
   position: relative;
-  width: 100vw;
-  left: 0;
-  right: 0;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  height: 620px; /* Altura ajustable */
+  width: 100%;
+  max-width: 100vw;
+  height: 500px; /* Altura ajustable */
+  overflow: hidden; 
+  margin: 0 auto;
 
 
 }
@@ -107,18 +106,20 @@ export default {
   35% { opacity: 0; }    /* Fade out más rápido */
   100% { opacity: 0; }
 }
-.content {
+/*.content {
   display: block;
-
-}
+  text-align: center; 
+  margin: 20px 0;
+}*/
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(3, 300px);
-  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
   margin-top: 32px;
   width: 100%;
-  justify-content: center;
+  max-width: 1200px;
+  padding:0 16px;
 }
 .footer {
   margin-top: auto; /* Empuja el footer hacia abajo */
@@ -133,8 +134,59 @@ export default {
 h1{
     font-family: 'Poppins', sans-serif;
     font-size: 64px;
-    color: #6fa54e
-
+    color: #6fa54e;
+    text-align: center; 
+    margin:20px 0;
+}
+@media (max-width: 768px) {
+  .contenido-inicio{
+    padding: 24px 12px 0 12px;
+  }
+  .slideshow-container {
+    height:350px;
+  }
+  h1 {
+    font-size: 48px;
+  }
+  .cards {
+    grid-template-columns:repeat(2, 1fr);
+    gap: 20px;
+    padding: 0 12px;
+  }
+  
+}
+@media (max-width: 480px) {
+  .contenido-inicio{
+    padding: 16px 8px 0 8px;
+  }
+  .slideshow-container {
+    height: 250px;
+  }
+  h1 {
+    font-size: 32px;
+    margin: 15px 0;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 8px;
+  }
+  .footer {
+    font-size: 14px;
+    padding: 15px 0;
+  }
 }
 
+@media (max-width: 360px) {
+  .slideshow-container {
+    height: 200px;
+  }
+  h1 {
+    font-size: 28px;
+    
+  }
+  .cards {
+    gap: 12px
+  }
+}
 </style>

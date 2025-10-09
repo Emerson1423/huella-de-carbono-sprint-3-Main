@@ -91,7 +91,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .galeria-videos {
   font-family: 'Poppins', sans-serif;
   color: #333;

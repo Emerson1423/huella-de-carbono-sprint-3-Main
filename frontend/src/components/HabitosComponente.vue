@@ -1,7 +1,7 @@
 <template>
   <div class="contenido-habitos">
 
-    <h1 class="title-habito">
+    <h1>
       Hábitos Ecológicos
     </h1>
     <img v-if="!mostrarDetalle" src="@/assets/img/Img-Hab.jpg" alt="Hábitos Ecológicos" class="img-hab" />
@@ -21,7 +21,7 @@
           <h2 class="card-title">{{ card.title }}</h2>
           <p class="card-desc">{{ card.desc }}</p>
           <!-- Aquí debe pasar el índice -->
-          <button class="card-btn" @click.stop="agregarHabito(idx)">Agregar</button>
+          <button class="filter-btn" @click.stop="agregarHabito(idx)">Agregar</button>
         </div>
       </div>
     </div>
@@ -43,7 +43,7 @@
 
 <script>
 import HabitoDetalle from './HabitoDetalle.vue';
-
+import '../Style.css';
 
 
 export default {
@@ -618,13 +618,13 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
 }
 </script>
 
-<style scoped>
+<style>
 /* Título principal */
 .title-habito  {
   font-size: 4rem;
   text-align: center; 
   margin: 2rem 0 1.5rem 0;
-  color: #222;
+  color: #ffffff;
   letter-spacing: 0.5px;
 }
 .contenido-habitos{

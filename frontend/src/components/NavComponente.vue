@@ -223,7 +223,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 body {
   margin: 0;
   padding: 0;
@@ -521,23 +521,39 @@ body {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out;
+    background-color: #ffffff;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) ;
+    overflow-y: auto;
   }
 
   .navigation.active {
-    max-height: 300px;
-    padding-top: 1rem;
+    max-height: 90vh;
+    overflow-y:auto;
   }
 
   .nav-list {
+    display: flex;
     flex-direction: column;
     gap: 1rem;
     align-items: center;
+    padding: 1rem;
   }
 
   .nav-link {
     font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    width: 100%; 
+    border-radius: 4px;
   }
-
+  .dropdown-link {
+    text-align: center;
+    width: 100%;
+  }
   .dropdown-menu {
     position: static;
     opacity: 1;
@@ -568,6 +584,17 @@ body {
 
   .menu-toggle.active .bar:nth-child(3) {
     transform: translateY(-8px) rotate(-45deg);
+  }
+  @media (max-width: var(--tablet)) {
+  /* Estilos para pantallas más pequeñas que tablet */
+  .elemento {
+    font-size: 14px;
+  }
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+    }
+}
   }
 }
 </style>

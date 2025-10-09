@@ -173,7 +173,7 @@ export default {
         this.cargando = true;
         this.error = null;
         
-        const response = await axios.get('https://api-rest-eventos-qql6.onrender.com/api/eventos', {
+        const response = await axios.get('https://api-rest-eventos-9kvx.onrender.com/api/eventos', {
           params: {
             page: this.pagination.page,
             limit: this.pagination.limit,
@@ -460,6 +460,7 @@ export default {
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .evento-card:hover {
@@ -472,12 +473,15 @@ export default {
   border-radius: 12px;
   overflow: hidden;
   height: 200px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .evento-imagen img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 /* Contador de días */
@@ -561,6 +565,7 @@ export default {
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -647,12 +652,23 @@ export default {
   
   .evento-card {
     grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 16px;
   }
   
   .evento-imagen {
-    height: 220px;
+    height: 160px;
+    width: 100%;
+    max-width: 100%;
   }
   
+  .evento-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
   .evento-header {
     flex-direction: column;
     align-items: flex-start;

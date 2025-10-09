@@ -106,7 +106,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 
 .restablecer-bg {
   position: fixed;

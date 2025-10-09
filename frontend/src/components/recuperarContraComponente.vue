@@ -60,7 +60,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 
 .recuperar-bg {
   position: fixed;

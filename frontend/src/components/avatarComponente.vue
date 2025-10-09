@@ -93,13 +93,13 @@ export default {
   display: flex;
   flex-direction:column;
   align-items: center;
-  padding: 2px;
+  padding: 25px;
   background-color: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;  
-
-  
+  margin-bottom:20px;
+  margin-top: 20px;
 
 
 }
@@ -152,18 +152,20 @@ export default {
 
 .opciones-container {
   width: auto;
+  padding-bottom: 40px;
 }
 
 .opciones-container h3 {
   text-align: center;
   color: #2c3e50;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .opciones-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  gap: 25px;
+  padding-bottom: 60px;
 }
 
 .opcion-item {
@@ -223,15 +225,15 @@ export default {
   }
 }
 .card-btn {
-  background:#34db87;
+  background:#549d18;
   color: #fff;
   border: none;
   border-radius: 7px;
-  padding: 0.8rem 2rem;
+  padding: 15px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
-  margin-top: 20px;
+  margin-top: 100px;
   font-size: 1rem;
   display: block;
   margin-left: auto;

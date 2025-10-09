@@ -475,7 +475,7 @@ export default {
 
 .strength-bar.strong {
   width: 100%;
-  background: #00C851;
+  background: #4b9c46;
 }
 
 .requirements {
@@ -525,7 +525,7 @@ export default {
 }
 
 .btn-editar {
-  background-color: #34db87;
+  background-color: #3d8e3e;
   color: white;
 }
 
@@ -543,7 +543,7 @@ export default {
 }
 
 .btn-guardar {
-  background-color: #27ae60;
+  background-color: #3d8e3e;
   color: white;
 }
 

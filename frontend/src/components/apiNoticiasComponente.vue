@@ -103,7 +103,7 @@ export default {
 </script>
 
 
-<style scoped>
+<style>
 .container {
   max-width: 1100px;
   margin: 0 auto;
@@ -117,9 +117,9 @@ export default {
 }
 
 .header-noticias h1 {
-  font-size: 2rem;
+  font-size: 2.3rem;
   font-weight: bold;
-  color: #222;
+  color: #0b6d11;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -151,7 +151,7 @@ export default {
 }
 
 .noticias-wrapper {
-  background-color: #80D09B; /* ✅ color de fondo (ajústalo al verde que prefieras) */
+  background-color:#6ebb6b; /* ✅ color de fondo (ajústalo al verde que prefieras) */
   padding: 30px;            /* espacio alrededor de las tarjetas */
   border-radius: 15px;      /* bordes redondeados */
   margin-bottom: 20px;      /* separación con la paginación */
@@ -204,7 +204,7 @@ export default {
 }
 
 .btn-link {
-  color: #2c7a7b;
+  color: #2c7b33;
   text-decoration: none;
   font-weight: bold;
 }
@@ -226,7 +226,7 @@ export default {
   height: 40px;
   border-radius: 8px;
   border: none;
-  background-color: #2c7a7b;
+  background-color: #307b2c;
   color: white;
   font-size: 18px;
   font-weight: bold;
@@ -235,7 +235,7 @@ export default {
 }
 
 .pagination button:hover:not(:disabled) {
-  background-color: #256d6d;
+  background-color: #256d39;
 }
 
 .pagination button:disabled {

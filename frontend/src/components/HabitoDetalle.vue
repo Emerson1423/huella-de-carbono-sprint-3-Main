@@ -47,7 +47,7 @@
             <div v-for="articulo in habito.articulos" :key="articulo.url" class="articulo-card">
               <h4>{{ articulo.titulo }}</h4>
               <p class="fuente">Fuente: {{ articulo.fuente }}</p>
-              <a :href="articulo.url" target="_blank" class="link-btn">
+              <a :href="articulo.url" target="_blank" class="filter-btn link-btn">
                 Leer aquí 
               </a>
             </div>
@@ -75,7 +75,7 @@
               
               <div class="video-info">
                 <h4>{{ video.titulo }}</h4>
-                <a :href="video.url" target="_blank" class="link-btn video-btn">
+                <a :href="video.url" target="_blank" class="filter-btn red link-btn red">
                   Ver en YouTube 
                </a>
               </div>
@@ -90,7 +90,7 @@
         <button 
           @click="$emit('anterior')" 
           :disabled="habitoActual === 0"
-          class="btn-nav"
+          class="filter-btn"
         >
           ← Anterior
         </button>
@@ -98,7 +98,7 @@
         <!-- boton agregar habito -->
         <button 
           @click="$emit('agregar')" 
-          class="btn-agregar"
+          class="filter-btn green"
         >
           ✓ Agregar Hábito
         </button>
@@ -107,7 +107,7 @@
         <button 
           @click="$emit('siguiente')" 
           :disabled="habitoActual === totalHabitos - 1"
-          class="btn-nav"
+          class="filter-btn"
         >
           Siguiente →
         </button>
@@ -115,7 +115,7 @@
         <!-- boton para volver -->
         <button 
           @click="$emit('volver')" 
-          class="btn-volver"
+          class="filter-btn gray"
         >
           ← Volver a la Lista
         </button>
@@ -136,9 +136,9 @@
 </template>
 
 <script>
-
+import '../Style.css';
 export default {
-  name: 'HabitoDetalle',
+  name: 'HabitoDetalle', 
   
   props: {
     // Objeto con datos del hábito
@@ -183,6 +183,12 @@ export default {
     };
     },
     //
+watch: {
+  habitoActual() {
+    this.scrollToTop();
+  }
+},
+
 methods: {
   manejarTeclas(evento) {
     switch(evento.key) {
@@ -230,8 +236,11 @@ methods: {
 
   abrirVideo(url) {
     window.open(url, '_blank');
-  } 
+  },
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 } 
+}
 };
 
 </script>
@@ -291,7 +300,7 @@ methods: {
   background: #f8f9fa;
 }
 
-.btn-nav,
+/*.btn-nav,
 .btn-agregar,
 .btn-volver {
   padding: 12px 24px;
@@ -532,23 +541,26 @@ methods: {
 }
 
 .video-card {
-  max-width: 800px; 
+  max-width: 1000px; 
   width: 100%;
   text-align: center;
+  overflow: hidden;
+}
+.video-preview {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
-/* Botones de enlaces */
-.link-btn {
-  display: inline-block;
-  background: #2e7d32;
-  color: white;
-  text-decoration: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+.video-thumbnail {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-width: 100%;
 }
-.link-btn:hover { background: #1b5e20; }
+
+/*.link-btn:hover { background: #1b5e20; }
 
 .video-btn { background: #d32f2f; }
 .video-btn:hover { background: #b71c1c; }

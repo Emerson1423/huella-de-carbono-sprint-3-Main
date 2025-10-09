@@ -1,7 +1,10 @@
 <template>
   <div>
-    <h1 class="calculoT">Calcular tu huella ecológica</h1>
-    
+    <div class="header-huella">
+      <h1>Calcular tu huella ecológica</h1>
+      <img src="@/assets/img/Huella.png" alt="huella" class="icono-huella" />
+    </div>
+   
     <!-- Mensaje de carga -->
     <div v-if="cargandoVerificacion" class="mensaje-carga">
       <p>🔍 Verificando disponibilidad...</p>
@@ -331,7 +334,7 @@ methods: {
 </script>
 
 
-<style scoped>
+<style>
 
 .mensaje-carga {
   text-align: center;
@@ -347,6 +350,30 @@ methods: {
   border: 2px solid #dee2e6;
   border-radius: 12px;
   margin: 20px 0;
+}
+
+.header-huella {
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-huella h1 {
+  font-size: 2.3rem;
+  font-weight: bold;
+  color: #0b6d11;
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-huella .icono-huella {
+  width: 90px;
+  height: auto;
+
 }
 
 .icono-restriccion {
@@ -404,7 +431,7 @@ methods: {
 
 }
 .carbon-footprint-form {
-  background-color: #8bc34a36;
+  background-color: #a3ea454a;
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
@@ -436,7 +463,7 @@ select {
   padding: 8px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  background-color: #80D09B;
+  background-color: #9cd080;
 }
 
 input[type="radio"] {
@@ -484,7 +511,7 @@ input[type="radio"] {
 }
 
 .calcular-btn {
-  background-color: #4CAF50;
+  background-color: #608f49;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -499,7 +526,7 @@ input[type="radio"] {
 }
 
 .calcular-btn:hover {
-  background-color: #45a049;
+  background-color: #407c43;
 }
 
 .results-section {

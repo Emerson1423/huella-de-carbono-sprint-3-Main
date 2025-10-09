@@ -419,7 +419,7 @@ export default {
 }
 
 .btn-login {
-    background: linear-gradient(to right, #2ecc71, #27ae60);
+    background: linear-gradient(to right, #58a21c, #49ae27);
     color: white;
     border: none;
     padding: 12px 24px;
