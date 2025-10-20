@@ -127,28 +127,29 @@ export default {
   },
   
   mounted() {
+    // Verificar estado inicial
     this.checkAuthStatus();
     
-    // Escuchar cambios en el localStorage
+    // Escuchar cambios en el localStorage (en otra pestaña)
     window.addEventListener('storage', this.checkAuthStatus);
+    
     // Escuchar evento personalizado para cuando se haga login
-    window.addEventListener('userLoggedIn', this.checkAuthStatus);
+    window.addEventListener('authStateChanged', this.checkAuthStatus);
   },
   
   beforeUnmount() {
     window.removeEventListener('storage', this.checkAuthStatus);
-    window.removeEventListener('userLoggedIn', this.checkAuthStatus);
+    window.removeEventListener('authStateChanged', this.checkAuthStatus);
   },
   
   methods: {
     checkAuthStatus() {
       const token = localStorage.getItem('token');
       const user = localStorage.getItem('user');
-     const avatarPrefs = localStorage.getItem('avatarPreferencias');
+      const avatarPrefs = localStorage.getItem('avatarPreferencias');
       
       if (token && user) {
         try {
-        
           this.isAuthenticated = true;
          
           if (avatarPrefs) {
@@ -202,21 +203,37 @@ export default {
           }
         });
 
-        if (!response.ok) throw new Error('Error al cerrar sesión');
+        if (!response.ok) {
+          throw new Error('Error al cerrar sesión');
+        }
         
+        // Si la respuesta es exitosa, limpiar localStorage
         this.forceLogout();
+        
       } catch (error) {
         console.error('Error en logout:', error.message);
-        this.$toast?.error(error.message || 'Error al cerrar sesión');
+        // Incluso si hay error, limpiar localStorage
+        this.forceLogout();
       } finally {
         this.showLogoutModal = false;
       }
     },
 
     forceLogout() {
+      // Limpiar localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      this.checkAuthStatus(); 
+      localStorage.removeItem('avatarPreferencias');
+      
+      // Actualizar estado
+      this.isAuthenticated = false;
+      this.userName = '';
+      this.userAvatar = require('@/assets/perfil/reemplazarP.png');
+      
+      // Disparar evento para que otros componentes se enteren
+      window.dispatchEvent(new Event('authStateChanged'));
+      
+      // Redirigir al inicio
       this.$router.push('/').catch(() => {});
     }
   }

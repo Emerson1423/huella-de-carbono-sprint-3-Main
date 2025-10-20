@@ -104,12 +104,13 @@ async handleSubmit() {
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // ✅ AGREGAR ESTAS DOS LÍNEAS:
-    // 1. Disparar evento para actualizar navbar
-    window.dispatchEvent(new Event('userLoggedIn'));
+    // Disparar evento para actualizar navbar
+    window.dispatchEvent(new Event('authStateChanged'));
     
-    // 2. Redirigir al INICIO en lugar de huella
-    this.$router.push('/');
+    // Esperar un pequeño delay para asegurar que el evento se procesó
+    setTimeout(() => {
+      this.$router.push('/');
+    }, 100);
     
   } catch (err) {
     console.error('Error en login:', err);
