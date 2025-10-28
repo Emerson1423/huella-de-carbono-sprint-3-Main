@@ -29,7 +29,7 @@
                                     class="btn-eliminar"
                                     title="Eliminar hábito"
                                 >
-                                    🗑️
+                                    Eliminar
                                 </button>
                             </div>
                             
@@ -329,18 +329,23 @@ export default {
 }
 
 .btn-eliminar {
-    background: #f44336;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    font-size: 0.8rem;
+background: #FF4742;
+  border: 1px solid #FF4742;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 10px;
+  min-height: 20px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+
+
 }
 
 .btn-eliminar:hover {
