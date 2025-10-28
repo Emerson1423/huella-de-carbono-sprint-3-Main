@@ -17,6 +17,12 @@
     background: #339436;
     color: #ffffff;
 }
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
 .filter-btn.gray {
     background: #686b6d;
     color: #ffffff;
@@ -41,6 +47,16 @@
 }
 .link-btn:hover { background: #1b5e20; }
 
+.filter-btn:disabled, filter-btn[disabled] {
+  background: #646464;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.filter-btn:disabled:hover, filter-btn[disabled]:hover {
+  transform: none;
+  box-shadow: none;
+  
+}
 .link-btn {
   display: inline-block;
   background: #2e7d32;

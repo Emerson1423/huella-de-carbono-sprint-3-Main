@@ -536,7 +536,7 @@ export default {
   // Verificar que el índice sea válido
   if (indiceHabito === null || indiceHabito === undefined || indiceHabito >= this.cards.length) {
     console.error('Índice de hábito inválido:', indiceHabito);
-    alert('❌ Error: No se pudo identificar el hábito seleccionado.');
+    alert(' Error: No se pudo identificar el hábito seleccionado.');
     return;
   }
   
@@ -545,14 +545,14 @@ export default {
   // Verificar que el hábito existe
   if (!habitoSeleccionado) {
     console.error('Hábito no encontrado en índice:', indiceHabito);
-    alert('❌ Error: Hábito no encontrado.');
+    alert(' Error: Hábito no encontrado.');
     return;
   }
   
   // CAMBIO 1: Obtener el ID del usuario actual
   const user = localStorage.getItem('user');
   if (!user) {
-    alert('❌ Debes iniciar sesión para agregar hábitos.');
+    alert(' Debes iniciar sesión para agregar hábitos.');
     return;
   }
   
@@ -561,7 +561,7 @@ export default {
     userData = JSON.parse(user);
   } catch (error) {
     console.error('Error al parsear usuario:', error);
-    alert('❌ Error al obtener información del usuario.');
+    alert('Error al obtener información del usuario.');
     return;
   }
   
@@ -576,7 +576,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
   
   // Verificar límite máximo de 3 hábitos
   if (habitosGuardados.length >= 3) {
-    alert('⚠️ Ya tienes 3 hábitos agregados. Elimina uno para agregar otro.');
+    alert(' Ya tienes 3 hábitos agregados. Elimina uno para agregar otro.');
     return;
   }
   
@@ -590,7 +590,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
   );
   
   if (habitoExiste) {
-    alert('⚠️ Este hábito ya está en tu lista.');
+    alert(' Este hábito ya está en tu lista.');
     return;
   }
 
@@ -610,7 +610,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
     detail: nuevoHabito 
   }));
   
-  alert(`✅ ¡Hábito "${habitoSeleccionado.title}" agregado exitosamente!`);
+  alert(`¡Hábito "${habitoSeleccionado.title}" agregado exitosamente!`);
 }
       
 
