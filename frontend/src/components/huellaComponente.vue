@@ -114,14 +114,15 @@
       <div v-if="errors.reciclaje" class="error-message">
         {{ errors.reciclaje }}
       </div>
-
-      <button @click="calcularHuella" class="calcular-btn">Calcular</button>
+      <div class="center">  
+      <button @click="calcularHuella" class="filter-btn green">Calcular</button>
     </div>
   </div>
+</div>
 </template>
 
 <script>
-
+import '../Style.css';
 
 export default {
 data() {

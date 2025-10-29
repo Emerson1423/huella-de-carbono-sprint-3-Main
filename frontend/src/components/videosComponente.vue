@@ -144,6 +144,10 @@ export default {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  min-height: 220px;
+  max-width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
 }
 
 .marco-video iframe {
@@ -152,6 +156,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  display: block;
 }
 
 .seccion-secundaria {
@@ -232,6 +237,7 @@ export default {
   .contenedor-principal {
     flex-direction: column;
     gap: 40px;
+    align-items: stretch;
   }
   
   .seccion-destacada {

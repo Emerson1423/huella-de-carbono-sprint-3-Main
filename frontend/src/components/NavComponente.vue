@@ -5,7 +5,7 @@
         <img src="@/assets/img/logo.png" alt="Logo" class="logo-img" />
       </div>
     
-      <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
+      <button class="menu-toggle" @click="toggleMenu" :class="{ active: isMenuOpen }" aria-label="Toggle menu">
         <span class="bar"></span>
         <span class="bar"></span>
         <span class="bar"></span>
@@ -135,11 +135,14 @@ export default {
     
     // Escuchar evento personalizado para cuando se haga login
     window.addEventListener('authStateChanged', this.checkAuthStatus);
+
+    document.addEventListener('click', this.handleOutsideClick);
   },
   
   beforeUnmount() {
     window.removeEventListener('storage', this.checkAuthStatus);
     window.removeEventListener('authStateChanged', this.checkAuthStatus);
+    document.removeEventListener('click', this.handleOutsideClick);
   },
   
   methods: {
@@ -217,8 +220,15 @@ export default {
       } finally {
         this.showLogoutModal = false;
       }
+    
     },
-
+    handleOutsideClick(event) {
+      const headerEl = this.$el;
+      if (!headerEl) return;
+      if (!headerEl.contains(event.target)) {
+        this.closeAll();
+      }
+    },
     forceLogout() {
       // Limpiar localStorage
       localStorage.removeItem('token');
@@ -518,100 +528,118 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .header {
-    flex-wrap: wrap;
-    padding: 1rem;
-  }
+.header {
+  padding: 1rem;
+}
 
-  .logo {
-    position: static;
-    margin-right: auto;
-  }
 
+.menu-toggle {
+  display: block;
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  z-index: 2001;
+}
+
+.navigation {
+  width: 82%;
+  height: 100vh;
+  border-top-right-radius: 8px;
+  max-width: 230px;
+  transform: translateX(100%);
+  transition: transform .25s ease;
+  background: #ffffff;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 2000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) ;
+  overflow-y: auto;
+  padding-top: 70px;
+  will-change: transform;
+  background-image: linear-gradient(rgb(255, 255, 255), rgba(77, 165, 0, 0.173));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.navigation.active {
+  transform: translateX(0);
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.nav-link {
+  font-size: 1.05rem;
+  padding: 10px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.dropdown-menu {
+  display: none;
+  padding-left: 16px;
+  margin-top: 6px;
+  position: static;
+  z-index: 1500;
+  width: 100%;
+
+  }
+.nav-link:hover {
+  background-color: rgba(66, 185, 131, 0.15);
+  
+}
+
+.dropdown-menu.active {
+  display: block;
+  padding: 8px;
+  border-radius: 8px;
+}
+.dropdown-link {
+  display: block;
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+.drawer-logout {
+  position: absolute;
+  bottom: 16px;
+  left: 12px;
+  right: 12px;
+}
+
+/* Efecto activo para el botón hamburguesa */
+.menu-toggle.active .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.menu-toggle.active .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+@media (max-width: var(--tablet)) {
+/* Estilos para pantallas más pequeñas que tablet */
+.elemento {
+  font-size: 14px;
+}
+@media (max-width: 768px) {
   .menu-toggle {
     display: block;
-    position: static;
   }
-
-  .navigation {
-    width: 100%;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    background-color: #ffffff;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    z-index: 999;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) ;
-    overflow-y: auto;
-  }
-
-  .navigation.active {
-    max-height: 90vh;
-    overflow-y:auto;
-  }
-
-  .nav-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-    padding: 1rem;
-  }
-
-  .nav-link {
-    font-size: 1.2rem;
-    padding: 0.5rem 1rem;
-    text-align: center;
-    width: 100%; 
-    border-radius: 4px;
-  }
-  .dropdown-link {
-    text-align: center;
-    width: 100%;
-  }
-  .dropdown-menu {
-    position: static;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    box-shadow: none;
-    border: none;
-    background: rgba(0, 0, 0, 0.05);
-    margin-left: 1rem;
-  }
-
-  .modal-content {
-    margin: 1rem;
-  }
-
-  .modal-actions {
-    flex-direction: column;
-  }
-
-  /* Efecto activo para el botón hamburguesa */
-  .menu-toggle.active .bar:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-  }
-
-  .menu-toggle.active .bar:nth-child(2) {
-    opacity: 0;
-  }
-
-  .menu-toggle.active .bar:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-  }
-  @media (max-width: var(--tablet)) {
-  /* Estilos para pantallas más pequeñas que tablet */
-  .elemento {
-    font-size: 14px;
-  }
-  @media (max-width: 768px) {
-    .menu-toggle {
-      display: block;
-    }
 }
-  }
+}
 }
 </style>
