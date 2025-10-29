@@ -96,8 +96,31 @@
                 </div>
               </div>
               
-              <div class="evento-organizador">
-                <p><strong>Organizador:</strong> {{ evento.organizador.nombre }}</p>
+              <div class="evento-organizador-info">
+                <h4><i class="fas fa-users"></i> Información del Organizador</h4>
+                <p><strong>Organiza:</strong> {{ evento.organizador.nombre }}</p>
+                
+                <div class="contacto-organizador">
+                  <div v-if="evento.organizador.email" class="contacto-item">
+                    <i class="fas fa-envelope"></i>
+                    <a :href="'mailto:' + evento.organizador.email">{{ evento.organizador.email }}</a>
+                  </div>
+                  
+                  <div v-if="evento.organizador.telefono" class="contacto-item">
+                    <i class="fas fa-phone"></i>
+                    <a :href="'tel:' + evento.organizador.telefono">{{ evento.organizador.telefono }}</a>
+                  </div>
+                  
+                  <div v-if="evento.organizador.sitioWeb" class="contacto-item">
+                    <i class="fas fa-globe"></i>
+                    <a :href="evento.organizador.sitioWeb" target="_blank" rel="noopener">Sitio Web</a>
+                  </div>
+                  
+                  <div v-if="evento.organizador.facebook" class="contacto-item">
+                    <i class="fab fa-facebook"></i>
+                    <a :href="evento.organizador.facebook" target="_blank" rel="noopener">Facebook</a>
+                  </div>
+                </div>
               </div>
             </div>
           </transition>
@@ -136,7 +159,7 @@ export default {
       categoriaSeleccionada: null,
       cargando: true,
       error: null,
-      eventosExpandidos: [], // Array para controlar qué eventos están expandidos
+      eventosExpandidos: [],
       pagination: {
         page: 1,
         limit: 10,
@@ -149,7 +172,8 @@ export default {
         { value: 'reciclaje', label: 'Reciclaje' },
         { value: 'jornada-limpieza', label: 'Jornada de Limpieza' },
         { value: 'taller', label: 'Talleres' },
-        { value: 'reforestacion', label: 'Reforestación' }
+        { value: 'reforestacion', label: 'Reforestación' },
+        { value: 'educacion-ambiental', label: 'Educación Ambiental' }
       ]
     };
   },
@@ -199,17 +223,14 @@ export default {
     toggleDetalles(eventoId) {
       const index = this.eventosExpandidos.indexOf(eventoId);
       if (index > -1) {
-        // Si ya está expandido, lo contraemos
         this.eventosExpandidos.splice(index, 1);
       } else {
-        // Si está contraído, lo expandimos
         this.eventosExpandidos.push(eventoId);
       }
     },
     
     filtrarPorCategoria(categoria) {
       this.categoriaSeleccionada = categoria;
-      // Cerrar todos los detalles al cambiar de filtro
       this.eventosExpandidos = [];
     },
     
@@ -260,7 +281,8 @@ export default {
         'reciclaje': 'Reciclaje',
         'jornada-limpieza': 'Jornada de Limpieza',
         'taller': 'Taller',
-        'reforestacion': 'Reforestación'
+        'reforestacion': 'Reforestación',
+        'educacion-ambiental': 'Educación Ambiental'
       };
       return categorias[categoria] || categoria;
     }
@@ -564,8 +586,8 @@ export default {
   line-height: 1.6;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -598,9 +620,71 @@ export default {
   font-size: 1.1rem;
 }
 
-.evento-organizador {
-  color: #777;
+/* Información del organizador mejorada */
+.evento-organizador-info {
+  background: #e8f5e9;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 15px;
+}
+
+.evento-organizador-info h4 {
+  color: #2e7d32;
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.evento-organizador-info h4 i {
+  color: #4caf50;
+}
+
+.evento-organizador-info > p {
+  color: #333;
+  font-size: 1rem;
+  margin: 0 0 15px 0;
+}
+
+.contacto-organizador {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.contacto-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.contacto-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contacto-item i {
+  color: #4caf50;
+  font-size: 1.1rem;
+  min-width: 20px;
+}
+
+.contacto-item a {
+  color: #555;
+  text-decoration: none;
   font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.contacto-item a:hover {
+  color: #2e7d32;
+  text-decoration: underline;
 }
 
 .btn-ver-mas {
@@ -677,6 +761,10 @@ export default {
   .evento-detalles {
     flex-direction: column;
     gap: 10px;
+  }
+  
+  .contacto-organizador {
+    grid-template-columns: 1fr;
   }
 }
 </style>
